@@ -42,7 +42,7 @@ const Todo: React.FC = () => {
   // Check system preference on initial load
   useEffect(() => {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(true);
+      setDarkMode(false);
     }
   }, []);
 
@@ -204,7 +204,7 @@ const Todo: React.FC = () => {
 
       {/* Add Task Modal */}
       {showAddTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-[#8A90E2]'} rounded-lg p-6 w-full max-w-md transition-colors duration-300`}>
             <h2 className="text-xl font-bold mb-4 text-white">Add task</h2>
             

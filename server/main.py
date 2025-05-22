@@ -1,42 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
+from extensions import db
+from routes import routes
 
-app = Flask(__name__)
-CORS(app, supports_credentials=True)
+def create_app():
+    app = Flask(__name__)
+    CORS(app, supports_credentials=True)
 
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/todoapp'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/todoapp'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
 
-db = SQLAlchemy(app)
+    app.register_blueprint(routes)
 
-
-class User(db.Model):
-    __tablename__ = 'users'
-    userId = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(255), nullable=False)
-
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    user = User.query.filter_by(email=email).first()
-
-    if user and user.password == password:
-        return jsonify({
-            'message': 'Login successful',
-            'role': user.role,
-            'userId': user.userId,
-            'email': user.email
-        }), 200
-    else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)

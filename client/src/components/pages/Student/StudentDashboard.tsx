@@ -23,7 +23,7 @@ const StudentDashboard: React.FC = () => {
       window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
-      setDarkMode(true);
+      setDarkMode(false);
     }
   }, []);
 
