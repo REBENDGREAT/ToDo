@@ -1,26 +1,44 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // for navigation
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      alert('Login successful!');
-    } else {
-      setError(data.message || 'Login failed');
+      if (response.ok) {
+        alert(`Login successful! Role: ${data.role}`);
+
+        // Redirect based on role
+        if (data.role === 'admin') {
+          navigate('/admin-dashboard');
+        } else if (data.role === 'student') {
+          navigate('/student-dashboard');
+        } else if (data.role === 'teacher') {
+          navigate('/teacher-dashboard')
+        } else {
+          alert('Unknown role. Please contact support.');
+        }
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('An error occurred while logging in.');
     }
   };
 
